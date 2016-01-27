@@ -1,0 +1,6 @@
+.idea/
+*.json
+*.pyc
+requirements.txt
+
+
