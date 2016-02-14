@@ -62,8 +62,15 @@ NEWSPIDER_MODULE = 'auto_torrent.spiders'
 # Configure item pipelines
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-   'auto_torrent.pipelines.AutoTorrentPipeline': 300,
+   'auto_torrent.pipelines.MongoDBPipeline': 100,
+   'auto_torrent.pipelines.AutoTorrentPipeline': 200,
 }
+
+MONGODB_SERVER = "localhost"
+MONGODB_PORT = 27017
+MONGODB_DB = "autotorrent"
+MONGODB_COLLECTION = "torrents"
+
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See http://doc.scrapy.org/en/latest/topics/autothrottle.html
@@ -83,3 +90,9 @@ ITEM_PIPELINES = {
 #HTTPCACHE_DIR='httpcache'
 #HTTPCACHE_IGNORE_HTTP_CODES=[]
 #HTTPCACHE_STORAGE='scrapy.extensions.httpcache.FilesystemCacheStorage'
+
+#DOWNLOADER_CLIENTCONTEXTFACTORY = 'contextfactory.MyClientContextFactory'
+
+DOWNLOAD_HANDLERS = {
+  's3': None,
+}

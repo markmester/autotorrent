@@ -1,21 +1,20 @@
 import scrapy
 import re
 import transmissionrpc
-import pdb
-
 from auto_torrent.items import PirateItem
+
 
 
 class PirateSpider(scrapy.Spider):
   name = 'pirate'
 
   def __init__(self, base_url='https://thepiratebay.se/search/',
-               search_term='test', season='', episode=''):
+               search_term='family guy', season='', episode=''):
     self.base_url = base_url
     self.season = season
     self.episode = episode
     self.search_term = search_term
-    self.start_urls = [self.base_url + self.search_term + ' ' + self.format_search_term(self.episode, self.season)]
+    self.start_urls = [self.base_url + self.search_term + self.format_search_term(self.episode, self.season)]
 
   def parse(self, response):
     for sel, sel2 in zip(response.xpath('//tr/td[2]'), response.xpath('//tr/td[3]')):
@@ -82,7 +81,7 @@ class PirateSpider(scrapy.Spider):
         pass
 
       if seeders:
-        item['seeders'] = seeders
+        item['seeders'] = seeders.encode('utf-8')
       else:
         item['seeders'] = ''
 
