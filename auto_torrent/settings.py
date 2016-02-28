@@ -62,7 +62,7 @@ NEWSPIDER_MODULE = 'auto_torrent.spiders'
 # Configure item pipelines
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-   'auto_torrent.pipelines.MongoDBPipeline': 100,
+   #'auto_torrent.pipelines.MongoDBPipeline': 100,
    'auto_torrent.pipelines.AutoTorrentPipeline': 200,
 }
 
@@ -96,3 +96,10 @@ MONGODB_COLLECTION = "torrents"
 DOWNLOAD_HANDLERS = {
   's3': None,
 }
+
+# torrent search criteria
+ALLOWED_SOURCES = [
+    'ettv',
+    'yify'
+]
+MIN_SEEDERS = '10'
