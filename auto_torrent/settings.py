@@ -62,8 +62,9 @@ NEWSPIDER_MODULE = 'auto_torrent.spiders'
 # Configure item pipelines
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-   #'auto_torrent.pipelines.MongoDBPipeline': 100,
-   'auto_torrent.pipelines.AutoTorrentPipeline': 200,
+    'auto_torrent.pipelines.AutoTorrentPipeline': 100,
+    'auto_torrent.pipelines.ScrubbingPipeline': 200,
+    'auto_torrent.pipelines.MongoDBPipeline': 300,
 }
 
 MONGODB_SERVER = "localhost"
@@ -102,4 +103,5 @@ ALLOWED_SOURCES = [
     'ettv',
     'yify'
 ]
-MIN_SEEDERS = '10'
+MIN_SEEDERS = 10
+SIZE_CONSTRAINTS = (100, 2000) # min/max download size in MB
