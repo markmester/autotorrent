@@ -70,7 +70,7 @@ ITEM_PIPELINES = {
 MONGODB_SERVER = "localhost"
 MONGODB_PORT = 27017
 MONGODB_DB = "autotorrent"
-MONGODB_COLLECTION = "torrents"
+MONGODB_TORRENTS_COLLECTION = "torrents"
 
 
 # Enable and configure the AutoThrottle extension (disabled by default)

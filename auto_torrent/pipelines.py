@@ -7,6 +7,7 @@ from scrapy.exceptions import DropItem
 from scrapy import log
 from settings import ALLOWED_SOURCES, MIN_SEEDERS, SIZE_CONSTRAINTS
 import re
+from mongo import MongoConn
 
 
 
@@ -46,16 +47,7 @@ class ScrubbingPipeline(object):
         return item
 
 class MongoDBPipeline(object):
-
-    def __init__(self):
-        connection = pymongo.MongoClient(
-            settings['MONGODB_SERVER'],
-            settings['MONGODB_PORT']
-        )
-        db = connection[settings['MONGODB_DB']]
-        self.collection = db[settings['MONGODB_COLLECTION']]
-
     def process_item(self, item, spider):
-        self.collection.insert(dict(item))
+        MongoConn().torrents_coll.insert(dict(item))
         log.msg("Torrent added to MongoDB database!", level=log.DEBUG, spider=spider)
         return item
