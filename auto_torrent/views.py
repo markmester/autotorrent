@@ -46,11 +46,10 @@ def requires_auth(f):
 def search():
 
     # url params
-    pdb.set_trace()
-    term = request.args.get('term', '')
-    season = str(request.args.get('season', ''))
-    episode = request.args.get('episode', '')
-    print term, episode, season
+    term = request.args.get('term', '').lower()
+    season = request.args.get('season', '').lower()
+    episode = request.args.get('episode', '').lower()
+
     # return 404 if required args not present
     required_args = [term, season, episode]
     if not all(arg for arg in required_args):
@@ -62,11 +61,14 @@ def search():
     # episode = request.form['episode']
 
     # check if torrent already exists
-    pdb.set_trace()
-    coll = MongoConn().torrents_coll
-    REGEX = re.compile('.*{}.*'.format(term.replace(' ', '.*')))
-    match = coll.find({'title': {'$regex': REGEX}, 'season': season, 'episode': episode})
-    print match
+    # pdb.set_trace()
+    # coll = MongoConn().torrents_coll
+    # REGEX = re.compile('.*{}.*'.format(term.replace(' ', '.*')))
+    # print REGEX
+    # match = list(coll.find({'title': {'$regex': REGEX}, 'season': season, 'episode': episode}))
+    #
+    # if match:
+    #     print 'hi'
 
     # kick off scrapy process
     cmd = 'scrapy crawl pirate -a search_term=placeholder -a season={0} -a episode={1} -o test.json'.format(season, episode)
