@@ -1,14 +1,15 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, session, redirect, url_for
 import subprocess
 import logging
 from functools import wraps
+import os
 from mongo import MongoConn
 import re
 import pymongo
-
 import pdb
 
 app = Flask(__name__)
+app.secret_key = os.urandom(24)
 
 # logging setup
 file_handler = logging.FileHandler('app.log')
@@ -19,30 +20,42 @@ app.logger.setLevel(logging.INFO)
 def check_auth(username, password):
     return username == 'admin' and password == 'secret'
 
-def authenticate():
-    message = {'message': "Unable to authenticate."}
-    resp = jsonify(message)
-
-    resp.status_code = 401
-    resp.headers['WWW-Authenticate'] = 'Basic realm="Example"'
-
-    return resp
 
 def requires_auth(f):
     @wraps(f)
     def wrapper(*args, **kwargs):
-        auth = request.authorization
-        if not auth:
-            return authenticate()
-
-        elif not check_auth(auth.username, auth.password):
-            return authenticate()
+        if 'username' not in session:
+            return failed_auth()
         return f(*args, **kwargs)
-
     return wrapper
 
+
 ################### main search resource ###################
+@app.route("/login", methods=['GET'])
+def authenticate():
+    pdb.set_trace()
+    auth = request.authorization
+
+    if not auth:
+        return failed_auth()
+    elif not check_auth(auth.username, auth.password):
+        return failed_auth()
+
+    session['username'] = auth.username
+
+    message = {
+        'status': 200,
+        'message': 'User authenticated',
+    }
+
+    resp = jsonify(message)
+    resp.status_code = 200
+
+    return resp
+
+
 @app.route("/search", methods=['PUT'])
+@requires_auth
 def search():
 
     # url params
@@ -76,7 +89,46 @@ def search():
     cmd[4] = 'search_term={0}'.format(term)
     subprocess.Popen(cmd)
 
+    message = {
+        'status': 200,
+        'message': 'Search submitted successfully',
+    }
+
+    resp = jsonify(message)
+    resp.status_code = 200
+
+    return resp
+
+
+@app.route('/logout', methods=['GET'])
+def logout():
+    pdb.set_trace()
+    # remove the username from the session if it's there
+    session.pop('username', None)
+
+    message = {
+        'status': 200,
+        'message': 'Logged out successfully',
+    }
+
+    resp = jsonify(message)
+    resp.status_code = 200
+
+    return resp
+
 ################## error handling #########################
+@app.errorhandler(401)
+def failed_auth():
+    message = {
+        'status': 401,
+        'message': "Unable to authenticate."
+    }
+    resp = jsonify(message)
+    resp.status_code = 401
+    resp.headers['WWW-Authenticate'] = 'Basic realm="Example"'
+
+    return resp
+
 @app.errorhandler(404)
 def bad_request(error=None, help=None):
     message = {
@@ -93,4 +145,4 @@ def bad_request(error=None, help=None):
 
 ################# main ######################
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True)
